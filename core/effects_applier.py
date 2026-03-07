@@ -19,8 +19,11 @@ from configs.editing_profiles import EditingProfile
 class EffectsApplier:
     """效果应用器"""
 
-    def __init__(self, profile: EditingProfile, materials_dir: str = "/Users/gs/3·素材库"):
+    def __init__(self, profile: EditingProfile, materials_dir: Optional[str] = None):
+        import os
         self.profile = profile
+        if materials_dir is None:
+            materials_dir = os.getenv("MATERIALS_DIR", str(Path.home() / "materials"))
         self.materials_dir = Path(materials_dir)
 
     def apply_transitions(self, clips: List[VideoFileClip]) -> List[VideoFileClip]:
@@ -44,28 +47,35 @@ class EffectsApplier:
             return clips
 
         else:
-            # 其他转场类型暂时使用淡入淡出
-            return self.apply_transitions(clips)
+            # 其他转场类型使用淡入淡出
+            processed = []
+            for i, clip in enumerate(clips):
+                if i == 0:
+                    clip = clip.fx(fadein, duration)
+                if i == len(clips) - 1:
+                    clip = clip.fx(fadeout, duration)
+                processed.append(clip)
+            return processed
 
     def apply_color_grading(self, clip: VideoFileClip) -> VideoFileClip:
         """应用调色"""
+        import numpy as np
+
         if not self.profile.color_grading.enabled:
             return clip
 
         style = self.profile.color_grading.style
 
         if style == "cinematic":
-            # 电影感：降低饱和度，增加对比度
-            return clip.fx(lambda c: c.fx(lambda frame: frame * 0.95))
+            return clip.fl_image(lambda frame: (frame * 0.95).astype('uint8'))
 
         elif style == "high_contrast":
-            # 高对比度
             boost = self.profile.color_grading.boost_saturation
-            return clip.fx(lambda c: c.fx(lambda frame: frame * boost))
+            return clip.fl_image(lambda frame: np.clip(frame * boost, 0, 255).astype('uint8'))
 
         elif style == "bw":
-            # 黑白
-            return clip.fx(lambda c: c.fx(lambda frame: frame.mean(axis=2, keepdims=True).repeat(3, axis=2)))
+            return clip.fl_image(lambda frame:
+                np.repeat(frame.mean(axis=2, keepdims=True), 3, axis=2).astype('uint8'))
 
         return clip
 
