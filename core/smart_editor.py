@@ -27,41 +27,43 @@ class SmartEditor:
     def analyze_video_quality(self, video_path: str) -> float:
         """分析视频质量（清晰度+亮度）"""
         cap = cv2.VideoCapture(video_path)
+        if not cap.isOpened():
+            raise ValueError(f"无法打开视频文件: {video_path}")
+        try:
+            # 采样5帧
+            total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            sample_indices = np.linspace(0, total_frames - 1, 5, dtype=int)
 
-        # 采样5帧
-        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        sample_indices = np.linspace(0, total_frames - 1, 5, dtype=int)
+            sharpness_scores = []
+            brightness_scores = []
 
-        sharpness_scores = []
-        brightness_scores = []
+            for idx in sample_indices:
+                cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
+                ret, frame = cap.read()
+                if not ret:
+                    continue
 
-        for idx in sample_indices:
-            cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
-            ret, frame = cap.read()
-            if not ret:
-                continue
+                # 清晰度（拉普拉斯方差）
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                laplacian = cv2.Laplacian(gray, cv2.CV_64F)
+                sharpness = laplacian.var()
+                sharpness_scores.append(sharpness)
 
-            # 清晰度（拉普拉斯方差）
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            laplacian = cv2.Laplacian(gray, cv2.CV_64F)
-            sharpness = laplacian.var()
-            sharpness_scores.append(sharpness)
+                # 亮度
+                brightness = np.mean(gray)
+                brightness_scores.append(brightness)
 
-            # 亮度
-            brightness = np.mean(gray)
-            brightness_scores.append(brightness)
+            # 归一化评分
+            avg_sharpness = np.mean(sharpness_scores)
+            avg_brightness = np.mean(brightness_scores)
 
-        cap.release()
+            # 清晰度权重0.7，亮度权重0.3
+            sharpness_norm = min(avg_sharpness / 500, 1.0)
+            brightness_norm = 1.0 - abs(avg_brightness - 127) / 127
 
-        # 归一化评分
-        avg_sharpness = np.mean(sharpness_scores)
-        avg_brightness = np.mean(brightness_scores)
-
-        # 清晰度权重0.7，亮度权重0.3
-        sharpness_norm = min(avg_sharpness / 500, 1.0)
-        brightness_norm = 1.0 - abs(avg_brightness - 127) / 127
-
-        return sharpness_norm * 0.7 + brightness_norm * 0.3
+            return sharpness_norm * 0.7 + brightness_norm * 0.3
+        finally:
+            cap.release()
 
     def select_best_clips(self, video_paths: List[str]) -> List[Tuple[str, float]]:
         """选择最佳片段"""
@@ -95,11 +97,16 @@ class SmartEditor:
             if current_duration >= target:
                 break
 
-            clip = VideoFileClip(video_path)
+            try:
+                clip = VideoFileClip(video_path)
+            except Exception as e:
+                print(f"警告: 无法加载视频 {video_path}: {e}")
+                continue
 
             # 应用慢镜头
             if self.profile.slow_motion_speed != 1.0:
-                clip = clip.fx(lambda c: c.speedx(self.profile.slow_motion_speed))
+                from moviepy.video.fx.speedx import speedx
+                clip = clip.fx(speedx, self.profile.slow_motion_speed)
 
             # 计算需要的时长
             needed = min(self.profile.shot_duration, target - current_duration)
