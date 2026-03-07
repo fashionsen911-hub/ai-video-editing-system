@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+*.egg-info/
+dist/
+build/
+
+# 临时文件
+temp/
+*.tmp
+*.log
+
+# 视频文件
+*.mp4
+*.mov
+*.avi
+*.mkv
+
+# 音频文件
+*.mp3
+*.wav
+*.aac
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node
+node_modules/
+package-lock.json
+
+# 配置文件（可能包含敏感信息）
+config.json
+.env
