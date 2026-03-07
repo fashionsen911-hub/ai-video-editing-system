@@ -44,3 +44,6 @@ package-lock.json
 # 配置文件（可能包含敏感信息）
 config.json
 .env
+
+# 环境变量文件
+.env
