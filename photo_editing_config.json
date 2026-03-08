@@ -1,0 +1,48 @@
+{
+  "models": {
+    "gfpgan": {
+      "mode": "api",
+      "api_provider": "replicate",
+      "model": "tencentarc/gfpgan:0fbacf7afc6c144e5be9767cff80f25aff23e52b0708f17e20f9879b2f21516c"
+    },
+    "remove_bg": {
+      "mode": "api",
+      "api_key_env": "REMOVE_BG_API_KEY"
+    },
+    "sd_inpainting": {
+      "mode": "api",
+      "api_provider": "replicate",
+      "model": "stability-ai/stable-diffusion-inpainting"
+    },
+    "sdxl_controlnet": {
+      "mode": "api",
+      "api_provider": "replicate",
+      "model": "lucataco/sdxl-controlnet"
+    },
+    "ip_adapter": {
+      "mode": "api",
+      "api_provider": "replicate",
+      "model": "lucataco/ip-adapter-sdxl"
+    },
+    "real_esrgan": {
+      "mode": "api",
+      "api_provider": "replicate",
+      "model": "nightmareai/real-esrgan"
+    }
+  },
+  "presets": {
+    "portrait_beauty": {
+      "face_enhancement": {"strength": 0.8, "brighten": 0.3},
+      "lighting": {"style": "soft", "intensity": 0.7}
+    },
+    "reference_style": {
+      "reference_image": {"use_style": true, "use_color": true, "use_lighting": true},
+      "strength": 0.8
+    }
+  },
+  "output": {
+    "format": "jpg",
+    "quality": 95,
+    "max_size": 4096
+  }
+}
