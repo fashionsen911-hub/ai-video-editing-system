@@ -1,0 +1,62 @@
+{
+  "input_dir": "/Users/gs/5·视频/韩城/城门",
+  "music_dir": "/Users/gs/3·素材库/3、音乐/大气",
+  "output_path": "/Users/gs/Movies/Videos/AI_Output/韩城城门_成品.mp4",
+  "target_duration": 28,
+  "clips": [
+    {
+      "file": "DJI_20260112111251_0141_D.MP4",
+      "start": 5,
+      "duration": 3,
+      "speed_curve": "smooth_slow",
+      "transition": "crossfade"
+    },
+    {
+      "file": "DJI_20260112111757_0144_D.MP4",
+      "start": 10,
+      "duration": 4,
+      "speed_curve": "dynamic",
+      "transition": "cut"
+    },
+    {
+      "file": "DJI_20260112111935_0146_D.MP4",
+      "start": 8,
+      "duration": 3,
+      "speed_curve": "pulse",
+      "transition": "crossfade"
+    },
+    {
+      "file": "DJI_20260112112035_0147_D.MP4",
+      "start": 6,
+      "duration": 4,
+      "speed_curve": "smooth_slow",
+      "transition": "cut"
+    },
+    {
+      "file": "DJI_20260112112225_0149_D.MP4",
+      "start": 7,
+      "duration": 3,
+      "speed_curve": "pulse",
+      "transition": "crossfade"
+    },
+    {
+      "file": "DJI_20260112112316_0150_D.MP4",
+      "start": 12,
+      "duration": 4,
+      "speed_curve": "dynamic",
+      "transition": "crossfade"
+    },
+    {
+      "file": "DJI_20260112112955_0153_D.MP4",
+      "start": 3,
+      "duration": 4,
+      "speed_curve": "slow_motion",
+      "transition": null
+    }
+  ],
+  "music": {
+    "auto_select": true,
+    "keywords": ["Two Steps", "Thomas Bergersen", "Ivan Torrent"],
+    "beat_sync": true
+  }
+}
